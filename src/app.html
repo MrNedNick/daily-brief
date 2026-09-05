@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="A calm Hacker News reader: three feeds, threaded discussions and saved stories that open offline." />
+		<script>
+			// Applied before first paint so a light-theme reader never sees a
+			// dark flash. Kept tiny and inline on purpose.
+			try {
+				const stored = JSON.parse(localStorage.getItem('daily-brief:prefs') || '{}');
+				const theme =
+					stored.theme ||
+					(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+				document.documentElement.dataset.theme = theme;
+			} catch (e) {
+				document.documentElement.dataset.theme = 'dark';
+			}
+		</script>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+/* Theme follows the `data-theme` attribute the prefs class writes on <html>,
+   so a toggle beats the OS setting and the choice survives a reload. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+	--surface: #ffffff;
+	--surface-raised: #f6f7f9;
+	--surface-hover: #eef0f4;
+	--border: #dfe3e9;
+	--ink: #14181f;
+	--ink-muted: #5c6673;
+	--ink-faint: #8b95a3;
+	--accent: #f0652a;
+	--accent-ink: #ffffff;
+	--focus: #2563eb;
+}
+
+[data-theme='dark'] {
+	--surface: #0d1117;
+	--surface-raised: #151b24;
+	--surface-hover: #1c2430;
+	--border: #262e3a;
+	--ink: #e7ecf3;
+	--ink-muted: #9aa5b4;
+	--ink-faint: #8892a4;
+	--accent: #ff7a45;
+	--accent-ink: #1a0f08;
+	--focus: #6ea8fe;
+}
+
+/* `inline` resolves the var at use time, which is what lets one utility class
+   follow the theme instead of baking a colour in. */
+@theme inline {
+	--color-surface: var(--surface);
+	--color-raised: var(--surface-raised);
+	--color-hover: var(--surface-hover);
+	--color-line: var(--border);
+	--color-ink: var(--ink);
+	--color-muted: var(--ink-muted);
+	--color-faint: var(--ink-faint);
+	--color-accent: var(--accent);
+	--color-accent-ink: var(--accent-ink);
+	--font-sans:
+		ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+		sans-serif;
+}
+
+html {
+	background: var(--surface);
+	color-scheme: light;
+}
+
+[data-theme='dark'] html,
+html[data-theme='dark'] {
+	color-scheme: dark;
+}
+
+body {
+	background: var(--surface);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+	outline: 2px solid var(--focus);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
+/* Comment bodies arrive as HTML from the API; give them readable defaults. */
+.comment-body a {
+	color: var(--accent);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	overflow-wrap: anywhere;
+}
+
+.comment-body p {
+	margin: 0.6rem 0;
+}
+
+.comment-body p:first-child {
+	margin-top: 0;
+}
+
+.comment-body pre {
+	overflow-x: auto;
+	padding: 0.75rem;
+	border-radius: 0.5rem;
+	background: var(--surface-hover);
+	font-size: 0.8125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
