@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { library } from '$lib/state/library.svelte';
 	import { timeAgo } from '$lib/utils/format';
 	import StoryRow from '$lib/components/StoryRow.svelte';
@@ -34,7 +35,7 @@
 		body="Use the bookmark button on any story to keep it — and its discussion — for reading offline."
 	>
 		{#snippet action()}
-			<a href="/" class="text-sm text-accent underline underline-offset-2">Browse the top feed</a>
+			<a href="{base}/" class="text-sm text-accent underline underline-offset-2">Browse the top feed</a>
 		{/snippet}
 	</Notice>
 {:else}

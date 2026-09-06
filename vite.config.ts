@@ -1,3 +1,4 @@
+import { loadEnv } from 'vite';
 import adapter from '@sveltejs/adapter-static';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
@@ -18,7 +19,8 @@ export default defineConfig({
 			// the browser, so there is nothing for a server to do at runtime.
 			// `/item/[id]` is unknowable at build time and falls back to the SPA
 			// shell, which then loads the story client-side.
-			adapter: adapter({ fallback: '200.html' })
+			paths: { base: loadEnv('production', '.', 'GITHUB_PAGES').GITHUB_PAGES === 'true' ? '/daily-brief' : '', relative: false },
+			adapter: adapter({ fallback: '404.html' })
 		})
 	],
 	test: {

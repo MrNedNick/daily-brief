@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import type { Story } from '$lib/api/types';
 	import { library } from '$lib/state/library.svelte';
 	import { domainOf, timeAgo, highlight } from '$lib/utils/format';
@@ -53,7 +54,7 @@
 			<span aria-hidden="true">·</span>
 			<time datetime={new Date(story.time * 1000).toISOString()}>{timeAgo(story.time)}</time>
 			<span aria-hidden="true">·</span>
-			<a href="/item/{story.id}" class="underline-offset-2 hover:text-ink hover:underline">
+			<a href="{base}/item/{story.id}" class="underline-offset-2 hover:text-ink hover:underline">
 				{story.descendants ?? 0}
 				{(story.descendants ?? 0) === 1 ? 'comment' : 'comments'}
 			</a>

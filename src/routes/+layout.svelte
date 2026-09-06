@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import '../app.css';
 	import { page } from '$app/state';
 	import { prefs } from '$lib/state/prefs.svelte';
@@ -13,15 +14,15 @@
 		library.init();
 	});
 
-	const onFeed = $derived(page.url.pathname === '/');
+	const onFeed = $derived(page.url.pathname === `${base}/`);
 	const savedCount = $derived(library.savedIds.size);
 </script>
 
 <svelte:head>
 	<!-- From `static/`, so the paths are stable in the built site. The `.ico`
 	     is there because browsers ask for `/favicon.ico` regardless. -->
-	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-	<link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
+	<link rel="icon" href="{base}/favicon.svg" type="image/svg+xml" />
+	<link rel="alternate icon" href="{base}/favicon.ico" sizes="32x32" />
 </svelte:head>
 
 <a
@@ -34,7 +35,7 @@
 <div class="flex min-h-screen flex-col">
 	<header class="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
 		<div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
-			<a href="/" class="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
+			<a href="{base}/" class="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
 				<span
 					class="grid size-7 place-items-center rounded-md bg-accent text-sm font-bold text-accent-ink"
 					aria-hidden="true">db</span
@@ -48,7 +49,7 @@
 			<nav aria-label="Feeds" class="ml-auto flex items-center gap-1">
 				{#each FEEDS as feed (feed.id)}
 					<a
-						href="/?feed={feed.id}"
+						href="{base}/?feed={feed.id}"
 						aria-current={onFeed && prefs.feed === feed.id ? 'page' : undefined}
 						class="rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-hover
 							{onFeed && prefs.feed === feed.id ? 'bg-hover font-medium text-ink' : 'text-muted'}"
@@ -58,19 +59,19 @@
 				{/each}
 
 				<a
-					href="/search"
-					aria-current={page.url.pathname === '/search' ? 'page' : undefined}
+					href="{base}/search/"
+					aria-current={page.url.pathname === `${base}/search/` ? 'page' : undefined}
 					class="rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-hover
-						{page.url.pathname === '/search' ? 'bg-hover font-medium text-ink' : 'text-muted'}"
+						{page.url.pathname === `${base}/search/` ? 'bg-hover font-medium text-ink' : 'text-muted'}"
 				>
 					Search
 				</a>
 
 				<a
-					href="/saved"
-					aria-current={page.url.pathname === '/saved' ? 'page' : undefined}
+					href="{base}/saved/"
+					aria-current={page.url.pathname === `${base}/saved/` ? 'page' : undefined}
 					class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-hover
-						{page.url.pathname === '/saved' ? 'bg-hover font-medium text-ink' : 'text-muted'}"
+						{page.url.pathname === `${base}/saved/` ? 'bg-hover font-medium text-ink' : 'text-muted'}"
 				>
 					Saved
 					{#if savedCount > 0}

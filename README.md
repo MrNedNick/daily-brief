@@ -1,5 +1,7 @@
 # Daily Brief
 
+**[Open Daily Brief](https://mrnednick.github.io/daily-brief/)**
+
 A calm Hacker News reader: three feeds, threaded discussions, full-text search,
 and saved stories that open with no connection at all.
 
@@ -117,10 +119,16 @@ cost of having a server.
 
 ## Deploy
 
-The build is a static site in `build/`, so any static host will serve it — the
-repository is private for now and has no public demo. To preview the production
-output locally:
+Published on [GitHub Pages](https://mrnednick.github.io/daily-brief/). Pushes to
+`main` run type checks, tests and a production build before deployment.
+
+For the Pages build, set `GITHUB_PAGES=true`; links and assets then use
+`/daily-brief`. Without this flag the build targets a domain root. Static routes
+use directory indexes, while unknown story routes load the `404.html` app shell
+and resolve in the browser. GitHub Pages returns HTTP 404 for that fallback even
+when the discussion loads successfully.
 
 ```bash
-npm run build && npm run preview
+npm run build
+npm run preview
 ```

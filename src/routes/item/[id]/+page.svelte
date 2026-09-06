@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import type { CommentNode as Node, Story } from '$lib/api/types';
@@ -70,7 +71,7 @@
 	<title>{story ? story.title : 'Discussion'} — Daily Brief</title>
 </svelte:head>
 
-<a href="/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
+<a href="{base}/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
 	<span aria-hidden="true">←</span> Back to stories
 </a>
 
@@ -89,7 +90,7 @@
 		body="Saved stories keep their comments on this device and open with no connection. This one was not saved before you went offline."
 	>
 		{#snippet action()}
-			<a href="/saved" class="text-sm text-accent underline underline-offset-2">Open saved stories</a>
+			<a href="{base}/saved/" class="text-sm text-accent underline underline-offset-2">Open saved stories</a>
 		{/snippet}
 	</Notice>
 {:else if failure === 'not-a-story'}
@@ -98,7 +99,7 @@
 		body="Item {id} is a reply inside a discussion, not a story of its own."
 	>
 		{#snippet action()}
-			<a href="/" class="text-sm text-accent underline underline-offset-2">Back to the feed</a>
+			<a href="{base}/" class="text-sm text-accent underline underline-offset-2">Back to the feed</a>
 		{/snippet}
 	</Notice>
 {:else if failure === 'not-found'}
