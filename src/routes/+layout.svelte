@@ -34,7 +34,7 @@
 
 <div class="flex min-h-screen flex-col">
 	<header class="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
-		<div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+		<div class="mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-4 py-3">
 			<a href="{base}/" class="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
 				<span
 					class="grid size-7 place-items-center rounded-md bg-accent text-sm font-bold text-accent-ink"
@@ -46,7 +46,7 @@
 				<span class="sr-only sm:not-sr-only">Daily Brief</span>
 			</a>
 
-			<nav aria-label="Feeds" class="ml-auto flex items-center gap-1">
+			<nav aria-label="Feeds" class="ml-auto flex min-w-0 flex-wrap items-center gap-1">
 				{#each FEEDS as feed (feed.id)}
 					<a
 						href="{base}/?feed={feed.id}"
