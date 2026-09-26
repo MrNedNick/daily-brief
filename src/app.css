@@ -5,29 +5,33 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 :root {
-	--surface: #ffffff;
-	--surface-raised: #f6f7f9;
-	--surface-hover: #eef0f4;
-	--border: #dfe3e9;
-	--ink: #14181f;
-	--ink-muted: #5c6673;
-	--ink-faint: #8b95a3;
-	--accent: #f0652a;
+	/* Newsprint: warm paper and near-black ink rather than pure white and grey.
+	   Every text colour here clears 4.5:1 on every surface it is used on. */
+	--surface: #fbfaf6;
+	--surface-raised: #f3f1ea;
+	--surface-hover: #ebe8df;
+	--border: #dcd8cc;
+	--rule: #1a1712;
+	--ink: #1a1712;
+	--ink-muted: #57534a;
+	--ink-faint: #6b665b;
+	--accent: #b93d0c;
 	--accent-ink: #ffffff;
-	--focus: #2563eb;
+	--focus: #1d4ed8;
 }
 
 [data-theme='dark'] {
-	--surface: #0d1117;
-	--surface-raised: #151b24;
-	--surface-hover: #1c2430;
-	--border: #262e3a;
-	--ink: #e7ecf3;
-	--ink-muted: #9aa5b4;
-	--ink-faint: #8892a4;
-	--accent: #ff7a45;
+	--surface: #111214;
+	--surface-raised: #18191c;
+	--surface-hover: #212227;
+	--border: #2c2d31;
+	--rule: #ece9e2;
+	--ink: #ece9e2;
+	--ink-muted: #aba69b;
+	--ink-faint: #96918a;
+	--accent: #ff8a5b;
 	--accent-ink: #1a0f08;
-	--focus: #6ea8fe;
+	--focus: #7fb0ff;
 }
 
 /* `inline` resolves the var at use time, which is what lets one utility class
@@ -42,9 +46,15 @@
 	--color-faint: var(--ink-faint);
 	--color-accent: var(--accent);
 	--color-accent-ink: var(--accent-ink);
+	--color-rule: var(--rule);
 	--font-sans:
 		ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
 		sans-serif;
+	/* System serifs only: a headline face without a web-font download, which
+	   keeps the first paint where Lighthouse wants it. */
+	--font-serif:
+		'Iowan Old Style', 'Palatino Linotype', Palatino, Charter, 'Bitstream Charter', 'Source Serif 4',
+		Georgia, serif;
 }
 
 html {
@@ -68,6 +78,14 @@ body {
 	outline: 2px solid var(--focus);
 	outline-offset: 2px;
 	border-radius: 3px;
+}
+
+/* The story the keyboard is on. Focus is moved there by `j`/`k`, so the ring
+   has to be obvious even when the browser would not draw one for a click. */
+[data-story]:focus {
+	outline: 2px solid var(--focus);
+	outline-offset: 2px;
+	border-radius: 0.5rem;
 }
 
 /* Comment bodies arrive as HTML from the API; give them readable defaults. */

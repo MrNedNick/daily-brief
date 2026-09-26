@@ -77,7 +77,7 @@
 	<title>Search — Daily Brief</title>
 </svelte:head>
 
-<h1 class="mb-3 text-lg font-semibold">Search Hacker News</h1>
+<h1 class="mb-3 font-serif text-2xl font-bold">Search Hacker News</h1>
 
 <label class="block">
 	<span class="sr-only">Search stories</span>

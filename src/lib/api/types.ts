@@ -1,15 +1,19 @@
 /** Shapes returned by the Hacker News APIs, narrowed to what the app uses. */
 
-export type FeedId = 'top' | 'new' | 'best';
+export type FeedId = 'top' | 'new' | 'best' | 'show' | 'ask' | 'job';
 
+/** The ranked feeds first, then the sections Hacker News itself keeps. */
 export const FEEDS: { id: FeedId; label: string; endpoint: string }[] = [
 	{ id: 'top', label: 'Top', endpoint: 'topstories' },
 	{ id: 'new', label: 'New', endpoint: 'newstories' },
-	{ id: 'best', label: 'Best', endpoint: 'beststories' }
+	{ id: 'best', label: 'Best', endpoint: 'beststories' },
+	{ id: 'show', label: 'Show HN', endpoint: 'showstories' },
+	{ id: 'ask', label: 'Ask HN', endpoint: 'askstories' },
+	{ id: 'job', label: 'Jobs', endpoint: 'jobstories' }
 ];
 
 export function isFeedId(value: unknown): value is FeedId {
-	return value === 'top' || value === 'new' || value === 'best';
+	return FEEDS.some((feed) => feed.id === value);
 }
 
 /** A story as the app uses it — the raw item has more fields we ignore. */

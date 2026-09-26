@@ -15,7 +15,7 @@
 </svelte:head>
 
 <header class="mb-4">
-	<h1 class="text-lg font-semibold">Saved for offline</h1>
+	<h1 class="font-serif text-2xl font-bold">Saved for offline</h1>
 	<p class="mt-1 text-sm text-muted">
 		Each of these was stored with its comment tree, so they open with no connection.
 	</p>

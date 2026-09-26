@@ -10,9 +10,11 @@ import type { CommentNode, SavedStory, Story } from './api/types';
  */
 
 const DB_NAME = 'daily-brief';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const SAVED = 'saved';
 const READ = 'read';
+/** The last edition and daily fact, so the front page opens offline. */
+const DAILY = 'daily';
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
 
@@ -25,6 +27,9 @@ function db() {
 			}
 			if (!database.objectStoreNames.contains(READ)) {
 				database.createObjectStore(READ);
+			}
+			if (!database.objectStoreNames.contains(DAILY)) {
+				database.createObjectStore(DAILY);
 			}
 		},
 		// Another tab wants to upgrade or delete the database and cannot while
@@ -71,4 +76,12 @@ export async function markRead(id: number): Promise<void> {
 export async function listReadIds(): Promise<number[]> {
 	const keys = await (await db()).getAllKeys(READ);
 	return keys.map(Number);
+}
+
+export async function getDaily<T>(key: string): Promise<T | undefined> {
+	return (await db()).get(DAILY, key);
+}
+
+export async function putDaily<T>(key: string, value: T): Promise<void> {
+	await (await db()).put(DAILY, value, key);
 }

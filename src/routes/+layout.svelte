@@ -4,8 +4,10 @@
 	import { page } from '$app/state';
 	import { prefs } from '$lib/state/prefs.svelte';
 	import { library } from '$lib/state/library.svelte';
-	import { FEEDS } from '$lib/api/types';
+	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import ShortcutsDialog from '$lib/components/ShortcutsDialog.svelte';
+	import { moveSelection, shortcutFor } from '$lib/utils/keyboard';
 
 	let { children } = $props();
 
@@ -14,8 +16,47 @@
 		library.init();
 	});
 
-	const onFeed = $derived(page.url.pathname === `${base}/`);
+	const onToday = $derived(page.url.pathname === `${base}/`);
 	const savedCount = $derived(library.savedIds.size);
+
+	let shortcuts = $state<ReturnType<typeof ShortcutsDialog> | null>(null);
+
+	/**
+	 * j/k walk every story on the page in reading order — the edition, then
+	 * the feed — by moving real focus, so the ring shows where you are and
+	 * Tab carries on from there. o/c/s act on the focused story by clicking
+	 * its own controls, which keeps one code path for mouse and keyboard.
+	 */
+	function onKeydown(event: KeyboardEvent) {
+		const action = shortcutFor(event);
+		if (!action) return;
+		if (action === 'help') {
+			event.preventDefault();
+			shortcuts?.toggle();
+			return;
+		}
+
+		const stories = [...document.querySelectorAll<HTMLElement>('[data-story]')];
+		const current = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>('[data-story]') ?? null;
+
+		if (action === 'next' || action === 'previous') {
+			const target = moveSelection(stories, current, action === 'next' ? 1 : -1);
+			if (!target) return;
+			event.preventDefault();
+			target.focus({ preventScroll: true });
+			target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+			return;
+		}
+
+		if (!current) return;
+		event.preventDefault();
+		if (action === 'open') current.querySelector<HTMLElement>('[data-open]')?.click();
+		if (action === 'discuss') {
+			const link = current.querySelector<HTMLAnchorElement>('[data-discuss]');
+			if (link) goto(link.href);
+		}
+		if (action === 'save') current.querySelector<HTMLElement>('[data-save]')?.click();
+	}
 </script>
 
 <svelte:head>
@@ -24,6 +65,8 @@
 	<link rel="icon" href="{base}/favicon.svg" type="image/svg+xml" />
 	<link rel="alternate icon" href="{base}/favicon.ico" sizes="32x32" />
 </svelte:head>
+
+<svelte:window onkeydown={onKeydown} />
 
 <a
 	href="#main"
@@ -43,20 +86,18 @@
 				<!-- `sr-only` rather than `hidden` below `sm`: the wordmark is the
 				     link's accessible name, and hiding it outright left the link
 				     nameless on phones. -->
-				<span class="sr-only sm:not-sr-only">Daily Brief</span>
+				<span class="sr-only font-serif text-lg sm:not-sr-only">Daily Brief</span>
 			</a>
 
-			<nav aria-label="Feeds" class="ml-auto flex min-w-0 flex-wrap items-center gap-1">
-				{#each FEEDS as feed (feed.id)}
-					<a
-						href="{base}/?feed={feed.id}"
-						aria-current={onFeed && prefs.feed === feed.id ? 'page' : undefined}
-						class="rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-hover
-							{onFeed && prefs.feed === feed.id ? 'bg-hover font-medium text-ink' : 'text-muted'}"
-					>
-						{feed.label}
-					</a>
-				{/each}
+			<nav aria-label="Main" class="ml-auto flex min-w-0 flex-wrap items-center gap-1">
+				<a
+					href="{base}/"
+					aria-current={onToday ? 'page' : undefined}
+					class="rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-hover
+						{onToday ? 'bg-hover font-medium text-ink' : 'text-muted'}"
+				>
+					Today
+				</a>
 
 				<a
 					href="{base}/search/"
@@ -83,6 +124,15 @@
 					{/if}
 				</a>
 
+				<button
+					type="button"
+					onclick={() => shortcuts?.toggle()}
+					class="hidden size-8 place-items-center rounded-md font-mono text-sm text-muted transition-colors hover:bg-hover hover:text-ink sm:grid"
+					aria-label="Keyboard shortcuts"
+					title="Keyboard shortcuts (?)"
+				>
+					?
+				</button>
 				<ThemeToggle />
 			</nav>
 		</div>
@@ -91,6 +141,8 @@
 	<main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
 		{@render children()}
 	</main>
+
+	<ShortcutsDialog bind:this={shortcuts} />
 
 	<footer class="border-t border-line">
 		<div
@@ -105,7 +157,7 @@
 					target="_blank">Hacker News API</a
 				>. No account, no tracking.
 			</p>
-			<p>Built with Svelte 5 and SvelteKit.</p>
+			<p>Built with Svelte 5 and SvelteKit · press <kbd class="rounded border border-line px-1 font-mono text-xs">?</kbd> for shortcuts.</p>
 		</div>
 	</footer>
 </div>

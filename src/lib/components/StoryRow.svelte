@@ -16,23 +16,28 @@
 	let { story, index, query = '' }: Props = $props();
 
 	const domain = $derived(domainOf(story.url));
-	const href = $derived(story.url ?? `/item/${story.id}`);
+	// Ask HN and other text posts have no link of their own — they open the
+	// discussion, which on GitHub Pages lives under the base path.
+	const href = $derived(story.url ?? `${base}/item/${story.id}/`);
 	const external = $derived(Boolean(story.url));
 	const read = $derived(library.isRead(story.id));
 	const titleParts = $derived(highlight(story.title, query));
 </script>
 
 <article
+	data-story={story.id}
+	tabindex="-1"
 	class="group flex gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-raised sm:gap-4 sm:px-4"
 >
 	{#if index !== undefined}
-		<span class="w-6 shrink-0 pt-0.5 text-right text-sm tabular-nums text-faint">{index + 1}</span>
+		<span class="w-6 shrink-0 pt-0.5 text-right font-serif text-sm tabular-nums text-faint">{index + 1}</span>
 	{/if}
 
 	<div class="min-w-0 flex-1">
-		<h2 class="text-[0.975rem] leading-snug font-medium sm:text-base">
+		<h2 class="font-serif text-[1.05rem] leading-snug font-semibold sm:text-[1.1rem]">
 			<a
 				{href}
+				data-open
 				rel={external ? 'noopener noreferrer' : undefined}
 				target={external ? '_blank' : undefined}
 				onclick={() => library.markRead(story.id)}
@@ -43,7 +48,7 @@
 						>{:else}{part.value}{/if}{/each}
 			</a>
 			{#if domain}
-				<span class="ml-1 text-xs font-normal text-faint">({domain})</span>
+				<span class="ml-1 font-sans text-xs font-normal text-faint">({domain})</span>
 			{/if}
 		</h2>
 
@@ -54,7 +59,7 @@
 			<span aria-hidden="true">·</span>
 			<time datetime={new Date(story.time * 1000).toISOString()}>{timeAgo(story.time)}</time>
 			<span aria-hidden="true">·</span>
-			<a href="{base}/item/{story.id}" class="underline-offset-2 hover:text-ink hover:underline">
+			<a href="{base}/item/{story.id}/" data-discuss class="underline-offset-2 hover:text-ink hover:underline">
 				{story.descendants ?? 0}
 				{(story.descendants ?? 0) === 1 ? 'comment' : 'comments'}
 			</a>

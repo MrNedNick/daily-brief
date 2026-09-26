@@ -7,6 +7,7 @@
 	import { domainOf, sanitizeHtml, timeAgo } from '$lib/utils/format';
 	import CommentNode from '$lib/components/CommentNode.svelte';
 	import SaveButton from '$lib/components/SaveButton.svelte';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 
 	let story = $state<Story | null>(null);
@@ -72,7 +73,7 @@
 </svelte:head>
 
 <a href="{base}/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
-	<span aria-hidden="true">←</span> Back to stories
+	<span aria-hidden="true">←</span> Back to today's edition
 </a>
 
 {#if loading}
@@ -110,7 +111,7 @@
 	<article>
 		<header class="flex gap-3">
 			<div class="min-w-0 flex-1">
-				<h1 class="text-xl leading-snug font-semibold text-balance">
+				<h1 class="font-serif text-2xl leading-tight font-bold text-balance sm:text-3xl">
 					{#if story.url}
 						<a href={story.url} rel="noopener noreferrer" target="_blank" class="hover:underline">
 							{story.title}
@@ -131,6 +132,7 @@
 					<time datetime={new Date(story.time * 1000).toISOString()}>{timeAgo(story.time)}</time>
 				</p>
 			</div>
+			<ShareButton {story} />
 			<SaveButton {story} />
 		</header>
 

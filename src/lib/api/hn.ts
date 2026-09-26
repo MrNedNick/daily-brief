@@ -5,7 +5,7 @@ export { fetchCommentTree } from './tree';
 export type { TreeOptions } from './tree';
 
 const FIREBASE = 'https://hacker-news.firebaseio.com/v0';
-const ALGOLIA = 'https://hn.algolia.com/api/v1';
+export const ALGOLIA = 'https://hn.algolia.com/api/v1';
 
 export class ApiError extends Error {
 	constructor(
@@ -17,9 +17,9 @@ export class ApiError extends Error {
 	}
 }
 
-type Fetch = typeof globalThis.fetch;
+export type Fetch = typeof globalThis.fetch;
 
-async function getJson<T>(url: string, signal?: AbortSignal, fetchFn: Fetch = fetch): Promise<T> {
+export async function getJson<T>(url: string, signal?: AbortSignal, fetchFn: Fetch = fetch): Promise<T> {
 	let response: Response;
 	try {
 		response = await fetchFn(url, { signal });
@@ -65,16 +65,18 @@ export async function fetchStories(
 	return items.filter((item): item is Story => Boolean(item) && !item!.deleted && !item!.dead);
 }
 
-interface AlgoliaResponse {
-	hits: {
-		objectID: string;
-		title: string | null;
-		url: string | null;
-		author: string;
-		points: number | null;
-		num_comments: number | null;
-		created_at_i: number;
-	}[];
+export interface AlgoliaHit {
+	objectID: string;
+	title: string | null;
+	url: string | null;
+	author: string;
+	points: number | null;
+	num_comments: number | null;
+	created_at_i: number;
+}
+
+export interface AlgoliaResponse {
+	hits: AlgoliaHit[];
 }
 
 export async function searchStories(

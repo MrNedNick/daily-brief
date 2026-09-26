@@ -1,0 +1,108 @@
+{
+ "hits": [
+  {
+   "objectID": "49849985",
+   "title": "Revealing the details of how OpenAI agents hacked Hugging Face",
+   "url": "https://swarmtraces.org/",
+   "author": "specked-citrus",
+   "points": 572,
+   "num_comments": 368,
+   "created_at_i": 1790370567,
+   "_tags": [
+    "story",
+    "author_specked-citrus",
+    "story_49849985",
+    "front_page"
+   ]
+  },
+  {
+   "objectID": "49848269",
+   "title": "Ollaya – Ollama for open-source, Jev-style decision models",
+   "url": "https://ollaya.dev/",
+   "author": "Ardakilic",
+   "points": 517,
+   "num_comments": 126,
+   "created_at_i": 1790361230,
+   "_tags": [
+    "story",
+    "author_Ardakilic",
+    "story_49848269",
+    "front_page"
+   ]
+  },
+  {
+   "objectID": "49845977",
+   "title": "U.S. appeals court upholds designation of Anthropic as supply chain risk",
+   "url": "https://www.cnbc.com/2026/09/25/pentagon-anthropic-ai-risk-appeals-court.html",
+   "author": "cramer4next",
+   "points": 467,
+   "num_comments": 805,
+   "created_at_i": 1790350165,
+   "_tags": [
+    "story",
+    "author_cramer4next",
+    "story_49845977"
+   ]
+  },
+  {
+   "objectID": "49852302",
+   "title": "Jury finds Facebook liable for deceiving users in Cambridge Analytica case",
+   "url": "https://www.cbsnews.com/news/facebook-liable-deceiving-users-cambridge-analytica/",
+   "author": "pseudolus",
+   "points": 314,
+   "num_comments": 82,
+   "created_at_i": 1790386610,
+   "_tags": [
+    "story",
+    "author_pseudolus",
+    "story_49852302",
+    "front_page"
+   ]
+  },
+  {
+   "objectID": "49855315",
+   "title": "Breaking Up with Google Play: Why Conversations Is Now Free",
+   "url": "https://gultsch.de/posts/breaking-up-with-google-play/",
+   "author": "ezst",
+   "points": 292,
+   "num_comments": 114,
+   "created_at_i": 1790420156,
+   "_tags": [
+    "story",
+    "author_ezst",
+    "story_49855315",
+    "front_page"
+   ]
+  },
+  {
+   "objectID": "49845998",
+   "title": "Gravity seems holographic. What does that mean for reality?",
+   "url": "https://www.quantamagazine.org/gravity-seems-holographic-what-does-that-mean-for-reality-20260925/",
+   "author": "ibobev",
+   "points": 240,
+   "num_comments": 186,
+   "created_at_i": 1790350262,
+   "_tags": [
+    "story",
+    "author_ibobev",
+    "story_49845998",
+    "front_page"
+   ]
+  },
+  {
+   "objectID": "49849141",
+   "title": "How we learned to stop worrying and love campus surveillance",
+   "url": "https://fnl.mit.edu/how-we-learned-to-stop-worrying-and-love-campus-surveillance/",
+   "author": "cdrnsf",
+   "points": 230,
+   "num_comments": 129,
+   "created_at_i": 1790366217,
+   "_tags": [
+    "story",
+    "author_cdrnsf",
+    "story_49849141"
+   ]
+  }
+ ],
+ "nbHits": 851
+}

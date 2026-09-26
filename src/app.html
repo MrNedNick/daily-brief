@@ -3,7 +3,10 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="description" content="A calm Hacker News reader: three feeds, threaded discussions and saved stories that open offline." />
+		<meta name="description" content="Today's edition of Hacker News: the biggest stories of the last 24 hours, a story from this day in HN history, sections, topics and saved stories that open offline." />
+		<!-- Both APIs are hit on first paint; opening the connections early saves a round trip each. -->
+		<link rel="preconnect" href="https://hn.algolia.com" crossorigin />
+		<link rel="preconnect" href="https://hacker-news.firebaseio.com" crossorigin />
 		<script>
 			// Applied before first paint so a light-theme reader never sees a
 			// dark flash. Kept tiny and inline on purpose.

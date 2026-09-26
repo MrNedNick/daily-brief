@@ -1,0 +1,48 @@
+{
+ "hits": [
+  {
+   "objectID": "10284321",
+   "title": "Show HN: I spent a year making an electro-mechanical prototype of a liquid clock",
+   "url": "http://www.hellorhei.com",
+   "author": "damjanstankovic",
+   "points": 681,
+   "num_comments": 103,
+   "created_at_i": 1443299350,
+   "_tags": [
+    "story",
+    "author_damjanstankovic",
+    "story_10284321",
+    "show_hn"
+   ]
+  },
+  {
+   "objectID": "10282230",
+   "title": "Terence Tao solves the Erdős Discrepancy Problem",
+   "url": "http://www.nature.com/news/maths-whiz-solves-a-master-s-riddle-1.18441",
+   "author": "jonbaer",
+   "points": 285,
+   "num_comments": 27,
+   "created_at_i": 1443246041,
+   "_tags": [
+    "story",
+    "author_jonbaer",
+    "story_10282230"
+   ]
+  },
+  {
+   "objectID": "10283327",
+   "title": "The real anti-Facebook is good old email",
+   "url": "http://www.wired.com/2015/09/sorry-ello-real-anti-facebook-good-old-email/",
+   "author": "Alex3917",
+   "points": 255,
+   "num_comments": 155,
+   "created_at_i": 1443281239,
+   "_tags": [
+    "story",
+    "author_Alex3917",
+    "story_10283327"
+   ]
+  }
+ ],
+ "nbHits": 65
+}

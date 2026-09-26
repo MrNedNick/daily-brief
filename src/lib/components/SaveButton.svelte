@@ -16,6 +16,7 @@
 
 <button
 	type="button"
+	data-save
 	onclick={() => library.toggle(story)}
 	disabled={busy}
 	aria-pressed={saved}
