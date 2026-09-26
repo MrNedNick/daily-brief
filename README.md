@@ -2,39 +2,54 @@
 
 **[Open Daily Brief](https://mrnednick.github.io/daily-brief/)**
 
-A calm Hacker News reader: three feeds, threaded discussions, full-text search,
-and saved stories that open with no connection at all.
+**Today's edition of Hacker News.** Open it in the morning and one screen
+tells you what the site talked about in the last 24 hours — then a real story
+from this same date years ago, then the feeds.
 
-![The top feed in dark theme](docs/screenshot.png)
+![Today's edition in dark theme](docs/screenshot.png)
 
 Built with **Svelte 5** and **SvelteKit 2** — deliberately, to work with runes
 rather than port habits from another framework. What that changed in practice is
 written up at the bottom.
 
 <details>
-<summary>The same feed in light theme</summary>
+<summary>The same page in light theme</summary>
 
-![The top feed in light theme](docs/screenshot-light.png)
+![Today's edition in light theme](docs/screenshot-light.png)
 
 </details>
 
 ## What it does
 
-- **Three feeds** — top, new and best, paged in as you scroll, 20 stories at a
-  time. The feed you were last on is the one that opens next time.
-- **Threaded discussions** — the comment tree with indentation, per-branch
-  collapsing that reports how many replies it hid, and on-demand loading for
-  branches deeper than the initial fetch.
-- **Save for offline** — a saved story is stored **with its comment tree** in
-  IndexedDB. Offline, it opens in full; an unsaved one says so instead of
-  showing an empty screen.
-- **Search** — full-text across all of Hacker News through the Algolia API,
-  debounced and abortable, with matches highlighted in the results.
-- **Read state, themes** — visited stories dim, light/dark follows the OS until
-  you pick one, and the choice is applied before first paint.
+- **Today's edition** — the seven highest-scoring stories posted in the last
+  24 hours, laid out like a front page: one lead, six below it, each with its
+  site, points, comment count and age.
+- **On this day** — "12 years ago on Hacker News": a real story from this
+  calendar date in an earlier year, with its discussion. The year is picked
+  from the date, so it changes daily; if that year has nothing (before HN
+  existed, 29 February), the card moves to the neighbouring year rather than
+  going blank.
+- **Works offline** — the edition and the daily card are kept in IndexedDB.
+  Without a connection the page opens with the last copy and says how old it is.
+- **Feeds and sections** — Top, New and Best, plus Show HN, Ask HN and Jobs,
+  paged in as you scroll. The last feed you read opens next time.
+- **Topics** — AI, programming, science and security. The rules are plain
+  domain and keyword lists in one file (`src/lib/utils/topics.ts`), tested, so
+  what a filter shows is predictable. Feed and topic are in the URL.
+- **Threaded discussions** — the comment tree with per-branch collapsing that
+  reports how many replies it hid, and on-demand loading of deep branches.
+- **Save for offline** — a saved story is stored **with its comment tree**, so
+  it opens in full on a plane.
+- **Keyboard reading** — `j`/`k` move between stories, `o` opens, `c` opens
+  the discussion, `s` saves, `?` lists the keys. They stay quiet while you type.
+- **Share** — the system share sheet on phones; on desktop, copy a link to the
+  article or to the discussion here. Discussion links open directly.
+- **Search** — full-text across all of Hacker News through Algolia, debounced
+  and abortable, with matches highlighted.
 
 No account, no tracking, no backend of its own — just the public
-[Hacker News API](https://github.com/HackerNews/API).
+[Hacker News API](https://github.com/HackerNews/API) and its
+[Algolia search index](https://hn.algolia.com/api).
 
 ## Running it
 
@@ -46,7 +61,7 @@ npm run dev
 ```
 
 ```bash
-npm test        # 20 unit tests (Vitest)
+npm test        # 46 unit tests (Vitest)
 npm run lint    # svelte-check, zero errors
 npm run build   # static production build
 ```
@@ -54,18 +69,26 @@ npm run build   # static production build
 ## How it is put together
 
 ```
-src/lib/api/      typed adapter over the HN Firebase and Algolia APIs
-src/lib/state/    runes-based state: prefs, one controller per feed, library
-src/lib/db.ts     IndexedDB (idb) — saved stories with comments, read marks
-src/lib/utils/    pure helpers: sanitising, relative time, highlighting
-src/routes/       feed, discussion, saved, search
+src/lib/api/      typed adapter over the HN Firebase and Algolia APIs;
+                  brief.ts builds the edition and the "on this day" card
+src/lib/state/    runes-based state: prefs, edition, one controller per feed, library
+src/lib/db.ts     IndexedDB (idb) — saved stories, read marks, the last edition
+src/lib/utils/    pure helpers: sanitising, relative time, topics, shortcuts
+src/routes/       today's edition, discussion, saved, search
 ```
 
 The data layer is deliberately dumb — it fetches and maps, and knows nothing
 about components. Everything stateful lives in three small classes, and the
 components read them directly.
 
-**Fetching a comment tree is the one genuinely tricky part.** A front-page
+**The edition comes from Algolia, not the Firebase API.** Firebase only has
+ranked id lists; "the biggest stories of the last 24 hours" and "this date in
+2014" are time-window queries, which the Algolia index answers in one request
+each (`numericFilters=created_at_i>…`, with the operator percent-encoded — a
+raw `>` is rejected before it reaches Algolia). The tests run against recorded
+responses in `src/lib/api/fixtures/`, not the network.
+
+**Fetching a comment tree is the other genuinely tricky part.** A front-page
 thread is a few hundred comments across a dozen levels. The obvious recursive
 walk fetches them one node at a time and takes tens of seconds; `api/tree.ts`
 does a breadth-first traversal instead, sending each level as one batch, with a
@@ -78,7 +101,7 @@ browser.
 
 ## What Svelte 5 actually changed
 
-The reason this project exists — three things that are genuinely different from
+The reason this project exists — four things that are genuinely different from
 Vue or React, all of them found by getting them wrong first:
 
 1. **State is a plain class field.** `FeedController` and `Library` are ordinary
@@ -98,24 +121,29 @@ Vue or React, all of them found by getting them wrong first:
    `DataCloneError`. Anything leaving the app for storage — IndexedDB,
    `postMessage`, a worker — has to go through `$state.snapshot()` first.
 
-The measurable side: the whole app ships **115 kB of JavaScript** uncompressed
-across all routes, and the production build takes under two seconds.
+4. **An effect tracks everything it reads — including inside the method it
+   calls.** The front page's effect called `feed.load()`, which reads the
+   feed's own `loading` flag. Online nobody noticed; offline, every failed
+   request flipped the flag, re-ran the effect and retried at once, and the
+   tab froze. Calls that are actions, not dependencies, go through `untrack`.
+
+The measurable side: the whole app ships **139 kB of JavaScript** uncompressed
+(51 kB gzipped) across all routes, and the production build takes about two
+seconds.
 
 ## Measured
 
-Lighthouse against the production build (`npm run build`, served statically,
-mobile profile):
+Lighthouse against the production build (`npm run build`, served statically):
 
-| Performance | Accessibility | Best practices | SEO |
-|---|---|---|---|
-| 91 | 100 | 100 | 100 |
+| Profile | Performance | Accessibility | Best practices | SEO |
+|---|---|---|---|---|
+| Mobile | 96 | 100 | 100 | 100 |
+| Desktop | 99 | 100 | 100 | 100 |
 
-No failing audits; CLS is 0 and total blocking time is 0 ms. Largest
-contentful paint is 3.4 s on a throttled mobile connection, and that is the
-honest ceiling of the design: the page is static, so the first stories cannot
-appear until the browser has asked the Hacker News API for the id list and then
-for twenty items. Serving them from a cache or a server would beat it — at the
-cost of having a server.
+Headlines use the system serif stack rather than a web font, so the
+newspaper look costs no download. The API hosts are preconnected, which is
+the rest of what can be done for a static page: the stories themselves cannot
+appear before the browser has asked Hacker News for them.
 
 ## Deploy
 

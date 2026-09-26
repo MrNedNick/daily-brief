@@ -31,5 +31,5 @@
 		"vite": "^8.0.16",
 		"vitest": "^5.0.0"
 	},
-	"description": "A calm Hacker News reader built with Svelte 5 runes and SvelteKit"
+	"description": "Today's edition of Hacker News — the last 24 hours and this day in HN history, built with Svelte 5 and SvelteKit"
 }
