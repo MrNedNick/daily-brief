@@ -59,13 +59,6 @@
 	}
 </script>
 
-<svelte:head>
-	<!-- From `static/`, so the paths are stable in the built site. The `.ico`
-	     is there because browsers ask for `/favicon.ico` regardless. -->
-	<link rel="icon" href="{base}/favicon.svg" type="image/svg+xml" />
-	<link rel="alternate icon" href="{base}/favicon.ico" sizes="32x32" />
-</svelte:head>
-
 <svelte:window onkeydown={onKeydown} />
 
 <a
