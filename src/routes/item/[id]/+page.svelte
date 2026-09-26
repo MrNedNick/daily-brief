@@ -13,6 +13,9 @@
 	let story = $state<Story | null>(null);
 	let comments = $state<Node[]>([]);
 	let loading = $state(true);
+	/** The story is on screen and its comment tree is still on the way. */
+	let commentsLoading = $state(false);
+	let commentsFailed = $state(false);
 	let offline = $state(false);
 	let failure = $state<'offline-unsaved' | 'not-found' | 'not-a-story' | 'network' | null>(null);
 
@@ -32,14 +35,26 @@
 		let cancelled = false;
 		loading = true;
 		failure = null;
+		story = null;
+		comments = [];
+		commentsLoading = false;
+		commentsFailed = false;
+
+		// A bare id can point at a comment; rendering that as a story gives an
+		// empty headline and "0 points".
+		const isStory = (item: Story) => !item.type || item.type === 'story' || item.type === 'job';
 
 		library
-			.open(storyId)
+			.open(storyId, (early) => {
+				if (cancelled || !isStory(early)) return;
+				story = early;
+				loading = false;
+				commentsLoading = true;
+			})
 			.then((result) => {
 				if (cancelled) return;
-				// A bare id can point at a comment; rendering that as a story
-				// gives an empty headline and "0 points".
-				if (result.story.type && result.story.type !== 'story' && result.story.type !== 'job') {
+				if (!isStory(result.story)) {
+					story = null;
 					failure = 'not-a-story';
 					return;
 				}
@@ -50,6 +65,11 @@
 			})
 			.catch((error: unknown) => {
 				if (cancelled) return;
+				// The headline is already up; only the replies failed.
+				if (story) {
+					commentsFailed = true;
+					return;
+				}
 				const message = error instanceof Error ? error.message : '';
 				failure =
 					message === 'offline-unsaved'
@@ -59,7 +79,9 @@
 							: 'network';
 			})
 			.finally(() => {
-				if (!cancelled) loading = false;
+				if (cancelled) return;
+				loading = false;
+				commentsLoading = false;
 			});
 
 		return () => {
@@ -154,7 +176,16 @@
 			{(story.descendants ?? 0) === 1 ? 'comment' : 'comments'}
 		</h2>
 
-		{#if comments.length}
+		{#if commentsLoading}
+			<div class="mt-3 animate-pulse space-y-3" aria-hidden="true">
+				<div class="h-16 rounded bg-hover"></div>
+				<div class="ml-6 h-12 rounded bg-hover"></div>
+				<div class="h-16 rounded bg-hover"></div>
+			</div>
+			<p class="sr-only" role="status">Loading the comments</p>
+		{:else if commentsFailed}
+			<Notice tone="error" title="Could not load the comments" body="The story loaded, but the network request for its replies failed." />
+		{:else if comments.length}
 			<ul class="-ml-3 sm:-ml-4">
 				{#each comments as comment (comment.id)}
 					<CommentNode node={comment} {collapsed} />

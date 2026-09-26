@@ -97,7 +97,14 @@ class Library {
 	 * IndexedDB when not. Offline, a saved story opens in full; an unsaved one
 	 * throws so the page can say why instead of rendering an empty shell.
 	 */
-	async open(id: number): Promise<{ story: Story; comments: SavedStory['comments']; offline: boolean }> {
+	/**
+	 * `onStory` fires as soon as the story itself arrives, before its comment
+	 * tree: a busy thread takes seconds to fetch, the headline does not.
+	 */
+	async open(
+		id: number,
+		onStory?: (story: Story) => void
+	): Promise<{ story: Story; comments: SavedStory['comments']; offline: boolean }> {
 		const cached = await db.getSavedStory(id);
 		if (browser && !navigator.onLine) {
 			if (!cached) throw new Error('offline-unsaved');
@@ -106,6 +113,7 @@ class Library {
 		try {
 			const story = await fetchItem<Story>(id);
 			if (!story) throw new Error('not-found');
+			onStory?.(story);
 			const comments = story.kids?.length ? await fetchCommentTree(story.kids) : [];
 			// Keep an already-saved copy current while the reader is online.
 			if (cached) await db.saveStory(plain(story), comments);
