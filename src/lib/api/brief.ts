@@ -1,5 +1,8 @@
 import { ALGOLIA, getJson, type AlgoliaHit, type AlgoliaResponse, type Fetch } from './hn';
+import { EDITION_SIZE, parseEdition, type EditionFile } from './edition-file';
 import type { Story } from './types';
+
+export { EDITION_SIZE };
 
 /**
  * The two things the front page is built around, both from the Algolia index
@@ -12,8 +15,6 @@ const DAY = 86_400;
 export const FIRST_YEAR = 2007;
 /** Enough points to have mattered at the time, low enough for 2007. */
 const MIN_POINTS = 20;
-
-export const EDITION_SIZE = 7;
 
 /** An Algolia hit in the shape the rest of the app already renders. */
 export function hitToStory(hit: AlgoliaHit): Story {
@@ -52,6 +53,20 @@ export async function fetchTopOfDay(
 	const since = Math.floor(now / 1000) - DAY;
 	const url = `${ALGOLIA}/search?tags=story&hitsPerPage=${EDITION_SIZE}&numericFilters=${encodeURIComponent(`created_at_i>${since}`)}`;
 	return toStories(await getJson<AlgoliaResponse>(url, signal, fetchFn)).slice(0, EDITION_SIZE);
+}
+
+/**
+ * The prebuilt edition published next to the app every hour — the same top
+ * stories with a gist and a line from the discussion. Null when it is missing
+ * or unreadable: the edition then comes from the live search alone.
+ */
+export async function fetchEditionFile(url: string, fetchFn: Fetch = fetch): Promise<EditionFile | null> {
+	try {
+		const response = await fetchFn(url, { cache: 'no-cache' });
+		return response.ok ? parseEdition(await response.json()) : null;
+	} catch {
+		return null;
+	}
 }
 
 /** `2026-09-26` for the reader's own calendar day, not UTC's. */

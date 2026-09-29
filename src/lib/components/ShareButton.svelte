@@ -122,6 +122,15 @@
 			>
 				Copy link to the discussion
 			</button>
+			<a
+				href="https://t.me/share/url?url={encodeURIComponent(story.url ?? discussion)}&text={encodeURIComponent(story.title)}"
+				target="_blank"
+				rel="noopener noreferrer"
+				onclick={() => (open = false)}
+				class="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-hover"
+			>
+				Send to Telegram
+			</a>
 			{#if status}
 				<p class="px-3 pt-1 pb-1.5 text-xs text-muted" aria-hidden="true">{status}</p>
 			{/if}

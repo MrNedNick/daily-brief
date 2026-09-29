@@ -87,7 +87,7 @@
 	<p class="text-xs font-semibold tracking-[0.18em] text-muted uppercase">{today}</p>
 	<h1 class="mt-1 font-serif text-4xl font-bold tracking-tight sm:text-5xl">Daily Brief</h1>
 	<p class="mt-1.5 font-serif text-sm text-muted italic sm:text-base">
-		What Hacker News talked about in the last 24 hours
+		The top of Hacker News, explained in two lines each
 	</p>
 </header>
 
@@ -96,6 +96,8 @@
 		<h2 id="edition" class="text-xs font-bold tracking-[0.18em] uppercase">Today's edition</h2>
 		{#if edition.topFrom !== null}
 			<p class="text-xs text-muted">Saved {timeAgo(Math.floor(edition.topFrom / 1000))}</p>
+		{:else if edition.updatedAt !== null}
+			<p class="text-xs text-muted">Updated {timeAgo(Math.floor(edition.updatedAt / 1000))}</p>
 		{/if}
 	</div>
 

@@ -10,11 +10,13 @@ vi.mock('../db', () => ({
 }));
 
 const network = { up: true };
+const prebuilt: { file: unknown } = { file: null };
 vi.mock('../api/brief', async (original) => {
 	const actual = await original<typeof import('../api/brief')>();
 	const story = { id: 1, title: 'Fresh', by: 'a', score: 9, time: 1, descendants: 0 };
 	return {
 		...actual,
+		fetchEditionFile: vi.fn(async () => prebuilt.file),
 		fetchTopOfDay: vi.fn(async () => {
 			if (!network.up) throw new Error('offline');
 			return [story];
@@ -42,6 +44,29 @@ describe('edition', () => {
 	beforeEach(() => {
 		store.clear();
 		network.up = true;
+		prebuilt.file = null;
+	});
+
+	it('uses a fresh hourly edition as it is, gists included', async () => {
+		const builtAt = Date.now() - 60_000;
+		prebuilt.file = {
+			version: 1,
+			builtAt,
+			stories: [{ id: 7, title: 'Prebuilt', by: 'p', score: 50, time: 1, descendants: 3, gist: 'What it is about' }]
+		};
+		const edition = await freshEdition();
+		expect(edition.top.map((s) => s.gist)).toEqual(['What it is about']);
+		expect(edition.updatedAt).toBe(builtAt);
+	});
+
+	it('with a stale hourly edition, ranks live and still borrows its gists', async () => {
+		prebuilt.file = {
+			version: 1,
+			builtAt: 0,
+			stories: [{ id: 1, title: 'Old ranking', by: 'a', score: 1, time: 1, descendants: 0, gist: 'Still true' }]
+		};
+		const edition = await freshEdition();
+		expect(edition.top).toMatchObject([{ title: 'Fresh', gist: 'Still true' }]);
 	});
 
 	it('fetches both parts and keeps them for later', async () => {

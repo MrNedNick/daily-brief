@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import type { CommentNode as Node, Story } from '$lib/api/types';
 	import { library } from '$lib/state/library.svelte';
+	import { edition } from '$lib/state/edition.svelte';
 	import { domainOf, sanitizeHtml, timeAgo } from '$lib/utils/format';
 	import CommentNode from '$lib/components/CommentNode.svelte';
 	import SaveButton from '$lib/components/SaveButton.svelte';
@@ -29,6 +30,12 @@
 	const id = $derived(Number(page.params.id));
 	const domain = $derived(domainOf(story?.url));
 	const body = $derived(sanitizeHtml(story?.text));
+	/** The two-line summary, when this story is in today's edition. */
+	const gist = $derived(edition.top.find((item) => item.id === id)?.gist);
+
+	$effect(() => {
+		edition.load();
+	});
 
 	$effect(() => {
 		const storyId = id;
@@ -157,6 +164,23 @@
 			<ShareButton {story} />
 			<SaveButton {story} />
 		</header>
+
+		{#if gist && !body}
+			<section aria-label="What it is about" class="mt-4 rounded-lg border border-line bg-raised px-4 py-3">
+				<p class="text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">What it is about</p>
+				<p class="mt-1 leading-relaxed">{gist}</p>
+				{#if story.url}
+					<a
+						href={story.url}
+						rel="noopener noreferrer"
+						target="_blank"
+						class="mt-2 inline-block text-sm font-medium text-accent underline underline-offset-2"
+					>
+						Read the original on {domain} ↗
+					</a>
+				{/if}
+			</section>
+		{/if}
 
 		{#if offline}
 			<p class="mt-4 rounded-lg border border-line bg-raised px-3 py-2 text-xs text-muted">

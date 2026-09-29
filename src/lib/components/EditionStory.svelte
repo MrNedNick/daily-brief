@@ -4,6 +4,7 @@
 	import { library } from '$lib/state/library.svelte';
 	import { domainOf, timeAgo } from '$lib/utils/format';
 	import SaveButton from './SaveButton.svelte';
+	import ShareButton from './ShareButton.svelte';
 
 	interface Props {
 		story: Story;
@@ -42,6 +43,15 @@
 				{story.title}
 			</a>
 		</h3>
+		{#if story.gist}
+			<p class="mt-2 leading-relaxed text-ink/85 {lead ? 'text-base sm:text-lg' : 'text-sm'}">{story.gist}</p>
+		{/if}
+		{#if story.quote}
+			<blockquote class="mt-2 border-l-2 border-rule pl-3 text-sm text-muted italic {lead ? 'line-clamp-4 sm:line-clamp-none' : 'line-clamp-3'}">
+				“{story.quote.text}”
+				<footer class="mt-0.5 text-xs not-italic">— {story.quote.by}, in the discussion</footer>
+			</blockquote>
+		{/if}
 		<p class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
 			<span class="tabular-nums">{story.score} points</span>
 			<span aria-hidden="true">·</span>
@@ -57,5 +67,8 @@
 			<time datetime={new Date(story.time * 1000).toISOString()}>{timeAgo(story.time)}</time>
 		</p>
 	</div>
-	<SaveButton {story} />
+	<div class="flex shrink-0 flex-col gap-1">
+		<SaveButton {story} />
+		<ShareButton {story} />
+	</div>
 </article>

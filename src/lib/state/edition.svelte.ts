@@ -1,11 +1,15 @@
 import { browser } from '$app/environment';
-import { dateKey, fetchOnThisDay, fetchTopOfDay, type OnThisDay } from '../api/brief';
+import { base } from '$app/paths';
+import { dateKey, fetchEditionFile, fetchOnThisDay, fetchTopOfDay, type OnThisDay } from '../api/brief';
+import { isFresh, withExtras } from '../api/edition-file';
 import * as db from '../db';
 import type { Story } from '../api/types';
 
 interface CachedTop {
 	/** When the edition was fetched, ms. */
 	fetchedAt: number;
+	/** When its ranking was made — the hourly build, or the live fetch. */
+	updatedAt?: number;
 	stories: Story[];
 }
 
@@ -29,6 +33,8 @@ class Edition {
 	topError = $state(false);
 	/** Set when the stories on screen are a saved copy, not a fresh fetch. */
 	topFrom = $state<number | null>(null);
+	/** When the ranking on screen was made, ms. */
+	updatedAt = $state<number | null>(null);
 
 	fact = $state<OnThisDay | null>(null);
 	factLoading = $state(false);
@@ -57,16 +63,23 @@ class Edition {
 		if (cached) {
 			this.top = cached.stories;
 			this.topFrom = cached.fetchedAt;
+			this.updatedAt = cached.updatedAt ?? cached.fetchedAt;
 		}
 		try {
 			if (cached && Date.now() - cached.fetchedAt < TOP_TTL) {
 				this.topFrom = null;
 				return;
 			}
-			const stories = await fetchTopOfDay();
+			// The hourly file carries the gists; a fresh one is the edition
+			// itself, a stale one still lends its gists to the live ranking.
+			const file = await fetchEditionFile(`${base}/edition.json`);
+			const fresh = file !== null && isFresh(file);
+			const stories = fresh ? file.stories : withExtras(await fetchTopOfDay(), file);
+			const updatedAt = fresh ? file.builtAt : Date.now();
 			this.top = stories;
 			this.topFrom = null;
-			await write<CachedTop>(TOP_KEY, { fetchedAt: Date.now(), stories });
+			this.updatedAt = updatedAt;
+			await write<CachedTop>(TOP_KEY, { fetchedAt: Date.now(), updatedAt, stories });
 		} catch {
 			// With a saved copy on screen, `topFrom` already says how old it
 			// is; the error state is only for a first visit with no network.

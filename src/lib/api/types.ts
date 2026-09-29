@@ -1,4 +1,5 @@
 /** Shapes returned by the Hacker News APIs, narrowed to what the app uses. */
+import type { StoryExtras } from './edition-file';
 
 export type FeedId = 'top' | 'new' | 'best' | 'show' | 'ask' | 'job';
 
@@ -16,8 +17,11 @@ export function isFeedId(value: unknown): value is FeedId {
 	return FEEDS.some((feed) => feed.id === value);
 }
 
-/** A story as the app uses it — the raw item has more fields we ignore. */
-export interface Story {
+/**
+ * A story as the app uses it — the raw item has more fields we ignore. The
+ * gist and quote come from the hourly edition file when it has this story.
+ */
+export interface Story extends StoryExtras {
 	id: number;
 	/** `story`, `job`, `poll` — or `comment`, when a link points at a reply. */
 	type?: string;
