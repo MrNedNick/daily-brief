@@ -4,6 +4,9 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # A new edition every hour: the job below rebuilds edition.json first.
+  schedule:
+    - cron: '17 * * * *'
 permissions:
   contents: read
 concurrency:
@@ -21,6 +24,11 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      # Never fails the deploy: without Hacker News it keeps the live edition,
+      # and without that the app loads stories live, as it always could.
+      - name: Build the edition
+        if: github.event_name != 'pull_request'
+        run: node --experimental-strip-types scripts/build-edition.ts static/edition.json
       - run: npm run build
         env:
           GITHUB_PAGES: 'true'
