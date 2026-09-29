@@ -2,9 +2,11 @@
 
 **[Open Daily Brief](https://mrnednick.github.io/daily-brief/)**
 
-**Today's edition of Hacker News.** Open it in the morning and one screen
-tells you what the site talked about in the last 24 hours — then a real story
-from this same date years ago, then the feeds.
+**Today's edition of Hacker News, explained.** Open it in the morning and one
+screen tells you what the site talked about in the last 24 hours — every
+headline with two lines on what it actually is and one line from the
+discussion, so a title like "Sonnet 5.5" never leaves you guessing. Then a real
+story from this same date years ago, then the feeds.
 
 ![Today's edition in dark theme](docs/screenshot.png)
 
@@ -21,9 +23,13 @@ written up at the bottom.
 
 ## What it does
 
-- **Today's edition** — the seven highest-scoring stories posted in the last
-  24 hours, laid out like a front page: one lead, six below it, each with its
+- **Today's edition** — the nine highest-scoring stories posted in the last
+  24 hours, laid out like a front page: one lead, eight below it, each with its
   site, points, comment count and age.
+- **What it is about** — under every headline, the article's own two-line
+  summary and the first reply from the discussion that says something in its
+  own words. The story page opens with the same summary and a link to the
+  original.
 - **On this day** — "12 years ago on Hacker News": a real story from this
   calendar date in an earlier year, with its discussion. The year is picked
   from the date, so it changes daily; if that year has nothing (before HN
@@ -43,7 +49,8 @@ written up at the bottom.
 - **Keyboard reading** — `j`/`k` move between stories, `o` opens, `c` opens
   the discussion, `s` saves, `?` lists the keys. They stay quiet while you type.
 - **Share** — the system share sheet on phones; on desktop, copy a link to the
-  article or to the discussion here. Discussion links open directly.
+  article or to the discussion here, or send it to Telegram. Discussion links
+  open directly.
 - **Search** — full-text across all of Hacker News through Algolia, debounced
   and abortable, with matches highlighted.
 
@@ -80,6 +87,17 @@ src/routes/       today's edition, discussion, saved, search
 The data layer is deliberately dumb — it fetches and maps, and knows nothing
 about components. Everything stateful lives in three small classes, and the
 components read them directly.
+
+**How the edition is built.** Every hour a scheduled GitHub Actions job runs
+`scripts/build-edition.ts` before the site is built. It takes the day's top
+stories, reads the head of each article for its `og:description` (or the post
+text for Ask HN and Show HN), picks the first substantive top-level reply, and
+writes `edition.json` next to the app — no API keys, no paid services. The job
+cannot break the site: an article that times out just has no summary, a failed
+search carries the live edition over, and the app itself falls back to the live
+Hacker News search whenever the file is missing or more than three hours old,
+still matching whatever summaries the file has by story id. The parsing lives in
+`src/lib/api/gist.ts` and is tested on recorded HTML.
 
 **The edition comes from Algolia, not the Firebase API.** Firebase only has
 ranked id lists; "the biggest stories of the last 24 hours" and "this date in
@@ -148,7 +166,8 @@ appear before the browser has asked Hacker News for them.
 ## Deploy
 
 Published on [GitHub Pages](https://mrnednick.github.io/daily-brief/). Pushes to
-`main` run type checks, tests and a production build before deployment.
+`main` and an hourly schedule run type checks, tests, the edition build and a
+production build before deployment.
 
 For the Pages build, set `GITHUB_PAGES=true`; links and assets then use
 `/daily-brief`. Without this flag the build targets a domain root. Static routes
